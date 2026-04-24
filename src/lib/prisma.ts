@@ -4,7 +4,9 @@ const globalForPrisma = globalThis as typeof globalThis & {
   prisma?: PrismaClient;
 };
 
-const prismaClientOptions = {} as never;
+const prismaClientOptions = {
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+} as never;
 
 export const prisma =
   globalForPrisma.prisma ??
