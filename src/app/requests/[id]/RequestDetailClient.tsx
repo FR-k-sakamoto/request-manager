@@ -13,6 +13,7 @@ import Paper from "@mui/material/Paper";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CategoryIcon from "@mui/icons-material/Category";
 import { useTheme } from "@mui/material/styles";
+import { signOut, useSession } from "next-auth/react";
 import {
   formatDate,
   requestCategoryLabels,
@@ -72,6 +73,7 @@ function InfoIcon({ children }: { children: React.ReactNode }) {
 
 export function RequestDetailClient({ request }: RequestDetailClientProps) {
   const theme = useTheme();
+  const { data: session } = useSession();
 
   return (
     <Box sx={{ minHeight: "100vh", color: "#1e293b" }}>
@@ -147,24 +149,56 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
             棚からリクエスト
           </Typography>
         </Box>
-        <Button
-          component={Link}
-          href="/requests"
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
+        <Box
           sx={{
-            borderColor: theme.palette.border,
-            color: "#334155",
-            borderRadius: 3,
-            px: 2.75,
-            py: 1.5,
-            fontWeight: 600,
-            fontSize: 18,
-            boxShadow: "0 8px 24px rgba(15, 23, 42, 0.04)",
+            display: "flex",
+            alignItems: { xs: "stretch", sm: "center" },
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 1.5,
           }}
         >
-          一覧に戻る
-        </Button>
+          <Button
+            component={Link}
+            href="/requests"
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              borderColor: theme.palette.border,
+              color: "#334155",
+              borderRadius: 3,
+              px: 2.75,
+              py: 1.5,
+              fontWeight: 600,
+              fontSize: 18,
+              boxShadow: "0 8px 24px rgba(15, 23, 42, 0.04)",
+            }}
+          >
+            一覧に戻る
+          </Button>
+          {session?.user && (
+            <>
+              <Typography sx={{ color: "#64748b", fontSize: 14, display: "flex", alignItems: "center" }}>
+                {session.user.name}
+              </Typography>
+              <Button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                variant="outlined"
+                sx={{
+                  borderColor: "#d4dbea",
+                  color: "#334155",
+                  borderRadius: 3,
+                  px: 2,
+                  py: 0.75,
+                  fontWeight: 600,
+                  fontSize: 14,
+                  textTransform: "none",
+                }}
+              >
+                ログアウト
+              </Button>
+            </>
+          )}
+        </Box>
       </Box>
 
       {/* Main content */}

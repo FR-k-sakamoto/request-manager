@@ -1,6 +1,7 @@
 import Form from "next/form";
 import styles from "./page.module.css";
 import { CategoryType, Prisma, RequestStatus } from "@/generated/prisma/client";
+import { UserHeader } from "@/components/user-header";
 
 export const dynamic = "force-dynamic";
 
@@ -241,6 +242,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
 
   return (
     <div className={styles.page}>
+      <UserHeader />
       <main className={styles.main}>
         <section className={styles.hero}>
           <div>

@@ -11,6 +11,7 @@ import Alert from "@mui/material/Alert";
 import { useTheme } from "@mui/material/styles";
 import { formatDate, requestCategoryLabels, requestStatusLabels } from "@/lib/request-ui";
 import type { RequestStatus, RequestCategoryType } from "@/lib/request-store";
+import { UserHeader } from "@/components/user-header";
 
 type RequestItem = {
   id: string;
@@ -37,6 +38,8 @@ export function RequestsClient({ requests, created }: RequestsClientProps) {
   const theme = useTheme();
 
   return (
+    <>
+    <UserHeader />
     <Box
       component="main"
       sx={{
@@ -187,5 +190,6 @@ export function RequestsClient({ requests, created }: RequestsClientProps) {
         )}
       </Box>
     </Box>
+    </>
   );
 }

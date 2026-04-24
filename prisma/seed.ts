@@ -1,7 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg";
-import { getDatabaseUrl } from "../src/lib/database-url";
+import { getDatabaseUrl, shouldUseDatabaseSsl } from "../src/lib/database-url";
 import {
   PrismaClient,
   CategoryType,
@@ -13,7 +13,7 @@ import {
 const connectionString = getDatabaseUrl();
 const pool = new Pool({
   connectionString,
-  ssl: connectionString.includes("render.com") ? { rejectUnauthorized: false } : undefined,
+  ssl: shouldUseDatabaseSsl(connectionString) ? { rejectUnauthorized: false } : undefined,
 });
 
 const prisma = new PrismaClient({
