@@ -1,6 +1,6 @@
 :root {
-  --background: #eef3f9;
-  --foreground: #132238;
+  --background: #f5f7fb;
+  --foreground: #1e293b;
 }
 
 html {
@@ -18,7 +18,9 @@ body {
   display: flex;
   flex-direction: column;
   color: var(--foreground);
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 24%),
+    linear-gradient(180deg, #f8fafc 0%, #f3f6fb 100%);
   font-family:
     var(--font-geist-sans),
     "Hiragino Sans",

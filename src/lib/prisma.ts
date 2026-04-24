@@ -6,6 +6,10 @@ const globalForPrisma = globalThis as typeof globalThis & {
   prisma?: PrismaClient;
 };
 
+const prismaClientOptions = {
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+} as never;
+
 function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL;
 
@@ -15,7 +19,7 @@ function createPrismaClient() {
 
   return new PrismaClient({
     adapter: new PrismaPg(createPgConfig(connectionString)),
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    ...prismaClientOptions,
   });
 }
 

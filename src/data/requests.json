@@ -1,0 +1,20 @@
+[
+  {
+    "id": "63ef55ca-f9bc-4e42-884a-1039eaf3af50",
+    "status": "PENDING",
+    "createdAt": "2026-04-24T06:53:52.817Z",
+    "title": "tesuto",
+    "categoryType": "OFFICE_SUPPLY",
+    "description": "在庫が残り少ないため、A4コピー用紙を追加で購入してほしいです。",
+    "requesterName": "田中"
+  },
+  {
+    "id": "d89a002b-b171-47ef-8eff-bca37d8748b7",
+    "status": "PENDING",
+    "createdAt": "2026-04-24T06:53:45.837Z",
+    "title": "コピー用紙を補充してほしい",
+    "categoryType": "OFFICE_SUPPLY",
+    "description": "在庫が残り少ないため、A4コピー用紙を追加で購入してほしいです。",
+    "requesterName": "田中"
+  }
+]
