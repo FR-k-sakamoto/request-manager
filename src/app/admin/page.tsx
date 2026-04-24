@@ -335,19 +335,25 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 return (
                   <TableRow key={request.id} hover>
                     <TableCell>
-                      <Typography
-                        component={Link}
+                      <Link
                         href={`/admin/requests/${request.id}`}
-                        sx={{
+                        style={{
                           fontWeight: 600,
-                          color: "primary.main",
+                          color: "inherit",
                           textDecoration: "none",
                           display: "block",
-                          "&:hover": { textDecoration: "underline" },
                         }}
                       >
-                        {request.title}
-                      </Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 600,
+                            color: "primary.main",
+                            "&:hover": { textDecoration: "underline" },
+                          }}
+                        >
+                          {request.title}
+                        </Typography>
+                      </Link>
                       <Typography variant="caption" sx={{ color: "text.secondary" }}>
                         {request.description}
                       </Typography>
@@ -376,14 +382,14 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                           alignItems: "flex-start",
                         }}
                       >
-                        <Button
-                          component={Link}
-                          href={`/admin/requests/${request.id}`}
-                          variant="outlined"
-                          size="small"
-                        >
-                          詳細
-                        </Button>
+                        <Link href={`/admin/requests/${request.id}`} style={{ textDecoration: "none" }}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                          >
+                            詳細
+                          </Button>
+                        </Link>
                         {/* 完了/未対応に戻すアクション */}
                         <Box component="form" action={updateRequestStatus}>
                           <input type="hidden" name="requestId" value={request.id} />

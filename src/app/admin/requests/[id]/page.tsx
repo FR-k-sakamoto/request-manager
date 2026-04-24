@@ -79,15 +79,15 @@ export default async function RequestDetailPage({ params }: RequestDetailPagePro
   return (
     <Box sx={{ maxWidth: 1120, mx: "auto" }}>
       {/* 戻るリンク */}
-      <Button
-        component={Link}
-        href="/admin"
-        startIcon={<ArrowBackIcon />}
-        variant="text"
-        sx={{ mb: 2, fontWeight: 700 }}
-      >
-        一覧に戻る
-      </Button>
+      <Link href="/admin" style={{ textDecoration: "none" }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          variant="text"
+          sx={{ mb: 2, fontWeight: 700 }}
+        >
+          一覧に戻る
+        </Button>
+      </Link>
 
       {/* ページヘッダー */}
       <Stack

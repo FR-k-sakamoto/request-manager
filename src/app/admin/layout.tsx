@@ -1,13 +1,12 @@
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
+import { AdminNav } from "./admin-nav";
 import { SignOutButton } from "./sign-out-button";
 
 export default async function AdminLayout({
@@ -101,12 +100,7 @@ export default async function AdminLayout({
                   gap: 1.5,
                 }}
               >
-                <Button component={Link} href="/admin" variant="outlined">
-                  管理者
-                </Button>
-                <Button component={Link} href="/admin/categories" variant="outlined">
-                  カテゴリ管理
-                </Button>
+                <AdminNav />
               </Box>
 
               <Box
