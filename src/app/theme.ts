@@ -18,6 +18,6 @@ export const theme = createTheme({
     borderRadius: 8,
   },
   typography: {
-    fontFamily: "var(--font-geist-sans), Arial, sans-serif",
+    fontFamily: '"Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif',
   },
 });
