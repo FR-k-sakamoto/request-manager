@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Request Manager
 
-## Getting Started
+Next.js 16 / Prisma / Auth.js で構成した在庫・備品リクエスト管理アプリです。
 
-First, run the development server:
+## Setup
 
 ```bash
+npm install
+npm run prisma:migrate:dev
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`.env.example` を元に `.env` を作成し、`DATABASE_URL`、`NEXTAUTH_URL`、`NEXTAUTH_SECRET` を設定してください。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 開発用ログイン
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+管理者: admin@example.com / Admin123!
+一般ユーザー: user@example.com / User123!
+```
 
-## Learn More
+## 画面
 
-To learn more about Next.js, take a look at the following resources:
+- `/login`: Auth.js Credentials による email / password ログイン
+- `/admin`: 管理者ダッシュボード、検索・絞り込み、ステータス更新
+- `/admin/categories`: 固定カテゴリ一覧
+- `/admin/requests/[id]`: 依頼詳細と履歴確認
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 備考
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 管理画面は `ADMIN` ロールのみアクセス可能です。
+- カテゴリ管理は固定値運用で、編集 UI は未実装です。
