@@ -11,7 +11,8 @@ type RequestRow = {
   title: string;
   requesterName: string;
   status: RequestStatus;
-  categoryType: CategoryType;
+  categoryType: CategoryType | null;
+  categoryName: string;
   createdAt: Date;
 };
 
@@ -46,6 +47,7 @@ const FALLBACK_ROWS: RequestRow[] = [
     requesterName: "田中",
     status: RequestStatus.PENDING,
     categoryType: CategoryType.OFFICE_SUPPLY,
+    categoryName: "日用品",
     createdAt: new Date("2026-04-24T09:00:00+09:00"),
   },
   {
@@ -54,6 +56,7 @@ const FALLBACK_ROWS: RequestRow[] = [
     requesterName: "佐藤",
     status: RequestStatus.COMPLETED,
     categoryType: CategoryType.IMPROVEMENT,
+    categoryName: "改善要望",
     createdAt: new Date("2026-04-23T10:30:00+09:00"),
   },
   {
@@ -62,6 +65,7 @@ const FALLBACK_ROWS: RequestRow[] = [
     requesterName: "山田",
     status: RequestStatus.REJECTED,
     categoryType: CategoryType.IMPROVEMENT,
+    categoryName: "改善要望",
     createdAt: new Date("2026-04-22T13:15:00+09:00"),
   },
   {
@@ -70,6 +74,7 @@ const FALLBACK_ROWS: RequestRow[] = [
     requesterName: "鈴木",
     status: RequestStatus.PENDING,
     categoryType: CategoryType.OFFICE_SUPPLY,
+    categoryName: "日用品",
     createdAt: new Date("2026-04-21T16:45:00+09:00"),
   },
 ];
@@ -102,6 +107,10 @@ function getStatusClassName(status: RequestStatus) {
     return styles.statusRejected;
   }
   return styles.statusPending;
+}
+
+function getCategoryLabel(row: RequestRow) {
+  return row.categoryType ? CATEGORY_LABELS[row.categoryType] : row.categoryName;
 }
 
 function filterRows(rows: RequestRow[], filters: { query: string; status?: RequestStatus; category?: CategoryType }) {
@@ -165,6 +174,7 @@ async function getRequestRows(filters: { query: string; status?: RequestStatus; 
         },
         category: {
           select: {
+            name: true,
             type: true,
           },
         },
@@ -179,6 +189,7 @@ async function getRequestRows(filters: { query: string; status?: RequestStatus; 
           requesterName: record.requester.name,
           status: record.status,
           categoryType: record.category.type,
+          categoryName: record.category.name,
           createdAt: record.createdAt,
         })),
         isFallback: false,
@@ -341,7 +352,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
                   rows.map((row) => (
                     <tr key={row.id}>
                       <td className={styles.titleCell}>{row.title}</td>
-                      <td>{CATEGORY_LABELS[row.categoryType]}</td>
+                      <td>{getCategoryLabel(row)}</td>
                       <td>
                         <span className={`${styles.statusChip} ${getStatusClassName(row.status)}`}>
                           {STATUS_LABELS[row.status]}
