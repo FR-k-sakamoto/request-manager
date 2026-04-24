@@ -1,19 +1,22 @@
 "use client";
 
+import Button from "@mui/material/Button";
+import type { SxProps, Theme } from "@mui/material/styles";
 import { signOut } from "next-auth/react";
 
 type SignOutButtonProps = {
-  className?: string;
+  sx?: SxProps<Theme>;
 };
 
-export function SignOutButton({ className }: SignOutButtonProps) {
+export function SignOutButton({ sx }: SignOutButtonProps) {
   return (
-    <button
-      className={className}
+    <Button
       onClick={() => signOut({ callbackUrl: "/login" })}
+      sx={sx}
       type="button"
+      variant="outlined"
     >
       ログアウト
-    </button>
+    </Button>
   );
 }

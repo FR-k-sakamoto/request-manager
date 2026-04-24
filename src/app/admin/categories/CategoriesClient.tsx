@@ -1,13 +1,35 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import Chip from "@mui/material/Chip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   createCategory,
   toggleCategoryStatus,
   updateCategory,
   type CategoryActionState,
 } from "./actions";
-import styles from "./page.module.css";
 
 export type CategoryListItem = {
   id: string;
@@ -36,71 +58,102 @@ export function CategoriesClient({ categories }: CategoriesClientProps) {
   }, [state.status]);
 
   return (
-    <div className={styles.contentGrid}>
-      <section className={styles.card} aria-labelledby="new-category-title">
-        <div className={styles.cardHeader}>
-          <h2 id="new-category-title">新規カテゴリ追加</h2>
-        </div>
+    <Grid container spacing={2.5} sx={{ alignItems: "flex-start" }}>
+      {/* 新規カテゴリ追加フォーム */}
+      <Grid size={{ xs: 12, md: 4 }}>
+        <Card variant="outlined">
+          <CardHeader
+            title="新規カテゴリ追加"
+            titleTypographyProps={{ variant: "h6", fontWeight: 700 }}
+            sx={{ borderBottom: (theme) => `1px solid ${theme.palette.border}`, pb: 2 }}
+          />
+          <CardContent>
+            <Stack
+              ref={formRef}
+              component="form"
+              action={formAction}
+              spacing={2}
+            >
+              <TextField
+                label="カテゴリ名"
+                name="name"
+                required
+                slotProps={{ htmlInput: { maxLength: 80 } }}
+                size="small"
+                fullWidth
+              />
 
-        <form ref={formRef} action={formAction} className={styles.form}>
-          <label className={styles.field}>
-            <span>カテゴリ名</span>
-            <input name="name" type="text" required maxLength={80} />
-          </label>
+              <TextField
+                label="説明"
+                name="description"
+                multiline
+                rows={4}
+                slotProps={{ htmlInput: { maxLength: 240 } }}
+                size="small"
+                fullWidth
+              />
 
-          <label className={styles.field}>
-            <span>説明</span>
-            <textarea name="description" rows={4} maxLength={240} />
-          </label>
+              <Box>
+                <FormLabel component="legend" sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+                  状態
+                </FormLabel>
+                <RadioGroup defaultValue="true" name="isActive" row>
+                  <FormControlLabel value="true" control={<Radio size="small" />} label="有効" />
+                  <FormControlLabel value="false" control={<Radio size="small" />} label="無効" />
+                </RadioGroup>
+              </Box>
 
-          <fieldset className={styles.radioField}>
-            <legend>状態</legend>
-            <label>
-              <input name="isActive" type="radio" value="true" defaultChecked />
-              <span>有効</span>
-            </label>
-            <label>
-              <input name="isActive" type="radio" value="false" />
-              <span>無効</span>
-            </label>
-          </fieldset>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={pending}
+                fullWidth
+              >
+                {pending ? "追加中" : "追加する"}
+              </Button>
 
-          <button className={styles.primaryButton} type="submit" disabled={pending}>
-            {pending ? "追加中" : "追加する"}
-          </button>
+              <ActionMessage state={state} />
+            </Stack>
+          </CardContent>
+        </Card>
+      </Grid>
 
-          <ActionMessage state={state} />
-        </form>
-      </section>
-
-      <section className={styles.card} aria-labelledby="category-list-title">
-        <div className={styles.cardHeader}>
-          <h2 id="category-list-title">登録済みカテゴリ一覧</h2>
-        </div>
-
-        {categories.length === 0 ? (
-          <p className={styles.emptyText}>登録済みカテゴリはありません。</p>
-        ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th scope="col">カテゴリ名</th>
-                  <th scope="col">説明</th>
-                  <th scope="col">状態</th>
-                  <th scope="col">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.map((category) => (
-                  <CategoryRow key={category.id} category={category} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </div>
+      {/* 登録済みカテゴリ一覧 */}
+      <Grid size={{ xs: 12, md: 8 }}>
+        <Card variant="outlined">
+          <CardHeader
+            title="登録済みカテゴリ一覧"
+            titleTypographyProps={{ variant: "h6", fontWeight: 700 }}
+            sx={{ borderBottom: (theme) => `1px solid ${theme.palette.border}`, pb: 2 }}
+          />
+          <CardContent sx={{ p: 0 }}>
+            {categories.length === 0 ? (
+              <Typography color="text.secondary" sx={{ p: 2.5 }} variant="body2">
+                登録済みカテゴリはありません。
+              </Typography>
+            ) : (
+              <TableContainer>
+                <Table sx={{ minWidth: 560 }}>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: "action.hover" }}>
+                      <TableCell sx={{ fontWeight: 700, fontSize: 13 }}>カテゴリ名</TableCell>
+                      <TableCell sx={{ fontWeight: 700, fontSize: 13 }}>説明</TableCell>
+                      <TableCell sx={{ fontWeight: 700, fontSize: 13 }}>状態</TableCell>
+                      <TableCell sx={{ fontWeight: 700, fontSize: 13 }}>操作</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {categories.map((category) => (
+                      <CategoryRow key={category.id} category={category} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 }
 
@@ -114,96 +167,131 @@ function CategoryRow({ category }: { category: CategoryListItem }) {
 
   if (isEditing) {
     return (
-      <tr>
-        <td colSpan={4}>
-          <form action={editAction} className={styles.editForm}>
-            <input type="hidden" name="id" value={category.id} />
-
-            <label className={styles.field}>
-              <span>カテゴリ名</span>
-              <input name="name" type="text" required maxLength={80} defaultValue={category.name} />
-            </label>
-
-            <label className={styles.field}>
-              <span>説明</span>
-              <textarea
-                name="description"
-                rows={3}
-                maxLength={240}
-                defaultValue={category.description ?? ""}
-              />
-            </label>
-
-            <fieldset className={styles.radioField}>
-              <legend>状態</legend>
-              <label>
-                <input
-                  name="isActive"
-                  type="radio"
-                  value="true"
-                  defaultChecked={category.isActive}
-                />
-                <span>有効</span>
-              </label>
-              <label>
-                <input
-                  name="isActive"
-                  type="radio"
-                  value="false"
-                  defaultChecked={!category.isActive}
-                />
-                <span>無効</span>
-              </label>
-            </fieldset>
-
-            <div className={styles.rowActions}>
-              <button className={styles.primaryButton} type="submit" disabled={editPending}>
-                {editPending ? "保存中" : "保存する"}
-              </button>
-              <button
-                className={styles.secondaryButton}
-                type="button"
-                onClick={() => setIsEditing(false)}
-                disabled={editPending}
+      <TableRow>
+        <TableCell colSpan={4} sx={{ p: 2 }}>
+          <Card variant="outlined" sx={{ backgroundColor: "action.hover" }}>
+            <CardContent>
+              <Stack
+                component="form"
+                action={editAction}
+                spacing={2}
               >
-                キャンセル
-              </button>
-            </div>
+                <input type="hidden" name="id" value={category.id} />
 
-            <ActionMessage state={editState} />
-          </form>
-        </td>
-      </tr>
+                <TextField
+                  label="カテゴリ名"
+                  name="name"
+                  required
+                  slotProps={{ htmlInput: { maxLength: 80 } }}
+                  defaultValue={category.name}
+                  size="small"
+                  fullWidth
+                />
+
+                <TextField
+                  label="説明"
+                  name="description"
+                  multiline
+                  rows={3}
+                  slotProps={{ htmlInput: { maxLength: 240 } }}
+                  defaultValue={category.description ?? ""}
+                  size="small"
+                  fullWidth
+                />
+
+                <Box>
+                  <FormLabel component="legend" sx={{ fontSize: 14, fontWeight: 600, mb: 1 }}>
+                    状態
+                  </FormLabel>
+                  <RadioGroup
+                    defaultValue={String(category.isActive)}
+                    name="isActive"
+                    row
+                  >
+                    <FormControlLabel value="true" control={<Radio size="small" />} label="有効" />
+                    <FormControlLabel value="false" control={<Radio size="small" />} label="無効" />
+                  </RadioGroup>
+                </Box>
+
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={editPending}
+                    size="small"
+                  >
+                    {editPending ? "保存中" : "保存する"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    disabled={editPending}
+                    size="small"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    キャンセル
+                  </Button>
+                </Stack>
+
+                <ActionMessage state={editState} />
+              </Stack>
+            </CardContent>
+          </Card>
+        </TableCell>
+      </TableRow>
     );
   }
 
   return (
-    <tr>
-      <td className={styles.nameCell}>{category.name}</td>
-      <td>{category.description || "－"}</td>
-      <td>
-        <span className={category.isActive ? styles.activeBadge : styles.inactiveBadge}>
-          {category.isActive ? "有効" : "無効"}
-        </span>
-      </td>
-      <td>
-        <div className={styles.actionsCell}>
-          <button className={styles.secondaryButton} type="button" onClick={() => setIsEditing(true)}>
-            編集
-          </button>
+    <TableRow hover>
+      <TableCell sx={{ fontWeight: 700, fontSize: 14 }}>{category.name}</TableCell>
+      <TableCell sx={{ fontSize: 14 }}>{category.description || "－"}</TableCell>
+      <TableCell>
+        <Chip
+          label={category.isActive ? "有効" : "無効"}
+          size="small"
+          sx={
+            category.isActive
+              ? {
+                  backgroundColor: (theme) => theme.palette.status.completed.bg,
+                  color: (theme) => theme.palette.status.completed.main,
+                  fontWeight: 700,
+                }
+              : {
+                  backgroundColor: "action.hover",
+                  color: "text.secondary",
+                  fontWeight: 700,
+                }
+          }
+        />
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap" }}>
+          <IconButton
+            aria-label={`${category.name}を編集`}
+            size="small"
+            onClick={() => setIsEditing(true)}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
 
           <form action={toggleAction}>
             <input type="hidden" name="id" value={category.id} />
             <input type="hidden" name="isActive" value={String(!category.isActive)} />
-            <button className={styles.secondaryButton} type="submit" disabled={togglePending}>
+            <Button
+              type="submit"
+              variant="outlined"
+              size="small"
+              disabled={togglePending}
+            >
               {togglePending ? "変更中" : category.isActive ? "無効化" : "有効化"}
-            </button>
+            </Button>
           </form>
 
           <ActionMessage state={toggleState} compact />
-        </div>
-      </td>
-    </tr>
+        </Stack>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -219,12 +307,11 @@ function ActionMessage({
   }
 
   return (
-    <p
-      className={`${compact ? styles.compactMessage : styles.message} ${
-        state.status === "error" ? styles.errorMessage : styles.successMessage
-      }`}
+    <Alert
+      severity={state.status === "error" ? "error" : "success"}
+      sx={compact ? { py: 0.25, fontSize: 13 } : undefined}
     >
       {state.message}
-    </p>
+    </Alert>
   );
 }

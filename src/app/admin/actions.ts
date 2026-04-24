@@ -8,10 +8,18 @@ import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+const optionalFormString = z.preprocess((value) => {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return undefined;
+}, z.string().optional());
+
 const updateStatusSchema = z.object({
   requestId: z.string().min(1),
   nextStatus: z.enum(["PENDING", "COMPLETED", "REJECTED"]),
-  rejectedReason: z.string().optional(),
+  rejectedReason: optionalFormString,
   redirectTo: z.string().default("/admin"),
 });
 

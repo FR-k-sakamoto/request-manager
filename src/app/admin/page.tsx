@@ -9,7 +9,29 @@ import {
   statusLabels,
 } from "@/lib/request-utils";
 import { updateRequestStatus } from "./actions";
-import styles from "./page.module.css";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Checkbox from "@mui/material/Checkbox";
+import Chip from "@mui/material/Chip";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Grid from "@mui/material/Grid";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
 type AdminPageProps = {
   searchParams: Promise<{
@@ -34,6 +56,14 @@ function getErrorMessage(errorCode: string) {
   }
 }
 
+type RequestStatus = "PENDING" | "COMPLETED" | "REJECTED";
+
+const statusPaletteKey: Record<RequestStatus, "pending" | "completed" | "rejected"> = {
+  PENDING: "pending",
+  COMPLETED: "completed",
+  REJECTED: "rejected",
+};
+
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const params = await searchParams;
   const query = normalizeQueryValue(params.query);
@@ -44,221 +74,371 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   const where = buildRequestWhere({ query, status, category });
 
-  const [categories, requests, totalCount, pendingCount, completedCount, rejectedCount] = await Promise.all([
-    prisma.category.findMany({
-      orderBy: { createdAt: "asc" },
-    }),
-    prisma.request.findMany({
-      where,
-      include: {
-        requester: {
-          select: { name: true },
+  const [categories, requests, totalCount, pendingCount, completedCount, rejectedCount] =
+    await Promise.all([
+      prisma.category.findMany({
+        orderBy: { createdAt: "asc" },
+      }),
+      prisma.request.findMany({
+        where,
+        include: {
+          requester: { select: { name: true } },
+          category: { select: { id: true, name: true, type: true } },
         },
-        category: {
-          select: { id: true, name: true, type: true },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    }),
-    prisma.request.count(),
-    prisma.request.count({ where: { status: "PENDING" } }),
-    prisma.request.count({ where: { status: "COMPLETED" } }),
-    prisma.request.count({ where: { status: "REJECTED" } }),
-  ]);
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.request.count(),
+      prisma.request.count({ where: { status: "PENDING" } }),
+      prisma.request.count({ where: { status: "COMPLETED" } }),
+      prisma.request.count({ where: { status: "REJECTED" } }),
+    ]);
 
   const sortedRequests = sortRequestsByPriority(requests, prioritizePending);
 
   return (
-    <section className={styles.section}>
-      <div className={styles.heading}>
-        <div>
-          <h1>管理者ダッシュボード</h1>
-          <p>投稿された依頼の対応状況を確認・更新できます</p>
-        </div>
-        <div className={styles.meta}>
-          <span>{formatDate(new Date())} 時点</span>
-        </div>
-      </div>
+    <Box>
+      {/* ヘッディング */}
+      <Stack
+        sx={{
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", sm: "flex-start" },
+          gap: 2,
+          mb: 3,
+        }}
+      >
+        <Box>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 800, letterSpacing: "-0.04em" }}
+          >
+            管理者ダッシュボード
+          </Typography>
+          <Typography sx={{ color: "text.secondary", mt: 0.5 }}>
+            投稿された依頼の対応状況を確認・更新できます
+          </Typography>
+        </Box>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", whiteSpace: "nowrap", pt: 0.5 }}
+        >
+          {formatDate(new Date())} 時点
+        </Typography>
+      </Stack>
 
-      <div className={styles.stats}>
-        <article className={styles.statCard}>
-          <span className={`${styles.statIcon} ${styles.statBlue}`}>□</span>
-          <div>
-            <p>すべて</p>
-            <strong>{totalCount}</strong>
-            <span>件</span>
-          </div>
-        </article>
-        <article className={styles.statCard}>
-          <span className={`${styles.statIcon} ${styles.statAmber}`}>⌛</span>
-          <div>
-            <p>未対応</p>
-            <strong>{pendingCount}</strong>
-            <span>件</span>
-          </div>
-        </article>
-        <article className={styles.statCard}>
-          <span className={`${styles.statIcon} ${styles.statGreen}`}>✓</span>
-          <div>
-            <p>完了</p>
-            <strong>{completedCount}</strong>
-            <span>件</span>
-          </div>
-        </article>
-        <article className={styles.statCard}>
-          <span className={`${styles.statIcon} ${styles.statRed}`}>×</span>
-          <div>
-            <p>却下</p>
-            <strong>{rejectedCount}</strong>
-            <span>件</span>
-          </div>
-        </article>
-      </div>
+      {/* 統計カード（4列） */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 6, md: 3 }}>
+          <Card elevation={0} sx={{ border: (t) => `1px solid ${t.palette.border}`, borderRadius: 3 }}>
+            <CardContent>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                すべて
+              </Typography>
+              <Stack sx={{ flexDirection: "row", alignItems: "baseline", gap: 0.5 }}>
+                <Typography variant="h4" sx={{ fontWeight: 800, color: "primary.main" }}>
+                  {totalCount}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>件</Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 6, md: 3 }}>
+          <Card elevation={0} sx={{ border: (t) => `1px solid ${t.palette.border}`, borderRadius: 3 }}>
+            <CardContent>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                未対応
+              </Typography>
+              <Stack sx={{ flexDirection: "row", alignItems: "baseline", gap: 0.5 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 800, color: (t) => t.palette.status.pending.main }}
+                >
+                  {pendingCount}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>件</Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 6, md: 3 }}>
+          <Card elevation={0} sx={{ border: (t) => `1px solid ${t.palette.border}`, borderRadius: 3 }}>
+            <CardContent>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                完了
+              </Typography>
+              <Stack sx={{ flexDirection: "row", alignItems: "baseline", gap: 0.5 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 800, color: (t) => t.palette.status.completed.main }}
+                >
+                  {completedCount}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>件</Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 6, md: 3 }}>
+          <Card elevation={0} sx={{ border: (t) => `1px solid ${t.palette.border}`, borderRadius: 3 }}>
+            <CardContent>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                却下
+              </Typography>
+              <Stack sx={{ flexDirection: "row", alignItems: "baseline", gap: 0.5 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 800, color: (t) => t.palette.status.rejected.main }}
+                >
+                  {rejectedCount}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>件</Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
-      <form className={styles.filterCard} method="get">
-        <div className={styles.filterGroup}>
-          <label htmlFor="query">検索</label>
-          <input
+      {/* フィルターフォーム (method="get" 維持) */}
+      <Paper
+        component="form"
+        method="get"
+        elevation={0}
+        sx={{
+          border: (t) => `1px solid ${t.palette.border}`,
+          borderRadius: 3,
+          p: 2.5,
+          mb: 3,
+        }}
+      >
+        <Stack
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            flexWrap: "wrap",
+            gap: 2,
+            alignItems: { xs: "stretch", sm: "center" },
+          }}
+        >
+          <TextField
             defaultValue={query}
             id="query"
             name="query"
+            label="検索"
             placeholder="依頼タイトル・依頼者で検索"
-            type="search"
+            size="small"
+            sx={{ minWidth: 220 }}
           />
-        </div>
-        <div className={styles.filterGroup}>
-          <label htmlFor="status">ステータス</label>
-          <select defaultValue={status} id="status" name="status">
-            <option value="">すべて</option>
-            <option value="PENDING">未対応</option>
-            <option value="COMPLETED">完了</option>
-            <option value="REJECTED">却下</option>
-          </select>
-        </div>
-        <div className={styles.filterGroup}>
-          <label htmlFor="category">カテゴリ</label>
-          <select defaultValue={category} id="category" name="category">
-            <option value="">すべて</option>
-            {categories.map((item) => (
-              <option key={item.id} value={item.type}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <label className={styles.toggle}>
-          <input
-            defaultChecked={prioritizePending}
-            name="prioritizePending"
-            type="checkbox"
-            value="1"
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel id="status-label">ステータス</InputLabel>
+            <Select
+              labelId="status-label"
+              id="status"
+              name="status"
+              defaultValue={status}
+              label="ステータス"
+            >
+              <MenuItem value="">すべて</MenuItem>
+              <MenuItem value="PENDING">未対応</MenuItem>
+              <MenuItem value="COMPLETED">完了</MenuItem>
+              <MenuItem value="REJECTED">却下</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel id="category-label">カテゴリ</InputLabel>
+            <Select
+              labelId="category-label"
+              id="category"
+              name="category"
+              defaultValue={category}
+              label="カテゴリ"
+            >
+              <MenuItem value="">すべて</MenuItem>
+              {categories.map((item) => (
+                <MenuItem key={item.id} value={item.type ?? ""}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                defaultChecked={prioritizePending}
+                name="prioritizePending"
+                value="1"
+                size="small"
+              />
+            }
+            label="未対応を優先表示"
           />
-          未対応を優先表示
-        </label>
-        <button className={styles.filterButton} type="submit">
-          絞り込み
-        </button>
-      </form>
+          <Button type="submit" variant="contained">
+            絞り込み
+          </Button>
+        </Stack>
+      </Paper>
 
-      {error ? <p className={styles.errorBanner}>{error}</p> : null}
+      {/* エラーバナー */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-      <div className={styles.tableCard}>
-        <div className={styles.tableHeader}>
-          <h2>依頼一覧</h2>
-          <span>{sortedRequests.length}件を表示中</span>
-        </div>
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>依頼タイトル</th>
-                <th>カテゴリ</th>
-                <th>依頼者</th>
-                <th>投稿日</th>
-                <th>ステータス</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
+      {/* 依頼テーブル */}
+      <Paper
+        elevation={0}
+        sx={{
+          border: (t) => `1px solid ${t.palette.border}`,
+          borderRadius: 3,
+          overflow: "hidden",
+          mb: 3,
+        }}
+      >
+        <Stack
+          sx={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: 2.5,
+            py: 2,
+            borderBottom: (t) => `1px solid ${t.palette.border}`,
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            依頼一覧
+          </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {sortedRequests.length}件を表示中
+          </Typography>
+        </Stack>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 700 }}>依頼タイトル</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>カテゴリ</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>依頼者</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>投稿日</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>ステータス</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>操作</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {sortedRequests.map((request) => {
-                const nextPositiveStatus = request.status === "COMPLETED" ? "PENDING" : "COMPLETED";
+                const nextPositiveStatus =
+                  request.status === "COMPLETED" ? "PENDING" : "COMPLETED";
                 const positiveButtonLabel =
                   request.status === "COMPLETED" ? "未対応に戻す" : "完了にする";
+                const sk =
+                  statusPaletteKey[request.status as RequestStatus] ?? "pending";
 
                 return (
-                  <tr key={request.id}>
-                    <td>
-                      <Link className={styles.requestLink} href={`/admin/requests/${request.id}`}>
-                        {request.title}
-                      </Link>
-                      <p className={styles.requestDescription}>{request.description}</p>
-                    </td>
-                    <td>{request.category.name}</td>
-                    <td>{request.requester.name}</td>
-                    <td>{formatDate(request.createdAt)}</td>
-                    <td>
-                      <span
-                        className={`${styles.statusBadge} ${
-                          request.status === "PENDING"
-                            ? styles.pending
-                            : request.status === "COMPLETED"
-                              ? styles.completed
-                              : styles.rejected
-                        }`}
+                  <TableRow key={request.id} hover>
+                    <TableCell>
+                      <Typography
+                        component={Link}
+                        href={`/admin/requests/${request.id}`}
+                        sx={{
+                          fontWeight: 600,
+                          color: "primary.main",
+                          textDecoration: "none",
+                          display: "block",
+                          "&:hover": { textDecoration: "underline" },
+                        }}
                       >
-                        {statusLabels[request.status]}
-                      </span>
-                    </td>
-                    <td>
-                      <div className={styles.rowActions}>
-                        <Link className={styles.detailButton} href={`/admin/requests/${request.id}`}>
+                        {request.title}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                        {request.description}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{request.category.name}</TableCell>
+                    <TableCell>{request.requester.name}</TableCell>
+                    <TableCell sx={{ whiteSpace: "nowrap" }}>
+                      {formatDate(request.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={statusLabels[request.status as keyof typeof statusLabels]}
+                        size="small"
+                        sx={{
+                          fontWeight: 700,
+                          color: (t) => t.palette.status[sk].main,
+                          bgcolor: (t) => t.palette.status[sk].bg,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Stack
+                        sx={{
+                          flexDirection: { xs: "column", lg: "row" },
+                          gap: 1,
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        <Button
+                          component={Link}
+                          href={`/admin/requests/${request.id}`}
+                          variant="outlined"
+                          size="small"
+                        >
                           詳細
-                        </Link>
-                        <form action={updateRequestStatus} className={styles.inlineForm}>
-                          <input name="requestId" type="hidden" value={request.id} />
-                          <input name="nextStatus" type="hidden" value={nextPositiveStatus} />
-                          <input name="redirectTo" type="hidden" value="/admin" />
-                          <button className={styles.completeButton} type="submit">
+                        </Button>
+                        {/* 完了/未対応に戻すアクション */}
+                        <Box component="form" action={updateRequestStatus}>
+                          <input type="hidden" name="requestId" value={request.id} />
+                          <input type="hidden" name="nextStatus" value={nextPositiveStatus} />
+                          <input type="hidden" name="redirectTo" value="/admin" />
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            size="small"
+                            color={nextPositiveStatus === "COMPLETED" ? "success" : "warning"}
+                          >
                             {positiveButtonLabel}
-                          </button>
-                        </form>
-                        <form action={updateRequestStatus} className={styles.rejectForm}>
-                          <input name="requestId" type="hidden" value={request.id} />
-                          <input name="nextStatus" type="hidden" value="REJECTED" />
-                          <input name="redirectTo" type="hidden" value="/admin" />
-                          <input
+                          </Button>
+                        </Box>
+                        {/* 却下アクション */}
+                        <Stack
+                          component="form"
+                          action={updateRequestStatus}
+                          sx={{ flexDirection: "row", gap: 0.5, alignItems: "center" }}
+                        >
+                          <input type="hidden" name="requestId" value={request.id} />
+                          <input type="hidden" name="nextStatus" value="REJECTED" />
+                          <input type="hidden" name="redirectTo" value="/admin" />
+                          <TextField
                             aria-label={`${request.title} の却下理由`}
                             name="rejectedReason"
                             placeholder="却下理由"
-                            type="text"
+                            size="small"
+                            sx={{ width: 160 }}
                           />
-                          <button className={styles.rejectButton} type="submit">
+                          <Button type="submit" variant="outlined" size="small" color="error">
                             却下
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
 
-      <div className={styles.infoBanner}>
+      {/* インフォバナー */}
+      <Alert severity="info" sx={{ mb: 2.5, borderRadius: 2 }}>
         ステータス変更は管理者権限を持つユーザーのみ実行できます。カテゴリは現在、固定値で運用しています。
-      </div>
+      </Alert>
 
-      <div className={styles.categoryLegend}>
+      {/* カテゴリ凡例 */}
+      <Stack sx={{ flexDirection: "row", flexWrap: "wrap", gap: 1 }}>
         {Object.entries(categoryTypeLabels).map(([key, label]) => (
-          <span key={key} className={styles.categoryChip}>
-            {label}
-          </span>
+          <Chip key={key} label={label} variant="outlined" size="small" />
         ))}
-      </div>
-    </section>
+      </Stack>
+    </Box>
   );
 }

@@ -1,0 +1,104 @@
+{
+  "workspace": "multi-agent",
+  "created_at": "2026-04-24T08:25:29.536489114Z",
+  "tasks": [
+    {
+      "id": "design-phase4",
+      "type": "design",
+      "assign_to": "designer",
+      "description": "MUI移行 Phase4: 管理者ダッシュボード・カテゴリ管理・管理者用依頼詳細の3ページを調査・設計・タスク分解",
+      "dependencies": null,
+      "status": "completed",
+      "created_at": "2026-04-24T08:25:48.022671617Z",
+      "updated_at": "2026-04-24T08:27:49.842373653Z"
+    },
+    {
+      "id": "code-top-4-1",
+      "type": "code",
+      "assign_to": "worker-top",
+      "description": "admin/page.tsx を MUI化（統計カード、フィルター、テーブル、アクション、凡例チップ、レスポンシブ）",
+      "dependencies": null,
+      "status": "completed",
+      "created_at": "2026-04-24T08:28:03.72299704Z",
+      "updated_at": "2026-04-24T08:32:14.511873342Z"
+    },
+    {
+      "id": "code-top-4-3",
+      "type": "code",
+      "assign_to": "worker-top",
+      "description": "admin/requests/[id]/page.tsx を MUI化（詳細カード、Grid、Timeline/List、アクションパネル）",
+      "dependencies": null,
+      "status": "completed",
+      "created_at": "2026-04-24T08:28:03.729173628Z",
+      "updated_at": "2026-04-24T08:33:10.640495417Z"
+    },
+    {
+      "id": "code-bot-4-2",
+      "type": "code",
+      "assign_to": "worker-bot",
+      "description": "admin/categories: page.tsx + CategoriesClient.tsx を MUI化（2カラム、フォーム、テーブル、Alert）",
+      "dependencies": null,
+      "status": "completed",
+      "created_at": "2026-04-24T08:28:03.735202166Z",
+      "updated_at": "2026-04-24T08:30:38.839136223Z"
+    },
+    {
+      "id": "review-top-4-1",
+      "type": "review",
+      "assign_to": "designer",
+      "description": "admin/page.tsx MUI化のレビュー",
+      "dependencies": [
+        "code-top-4-1"
+      ],
+      "status": "assigned",
+      "created_at": "2026-04-24T08:28:03.741434967Z",
+      "updated_at": "2026-04-24T08:32:23.816421396Z"
+    },
+    {
+      "id": "review-top-4-3",
+      "type": "review",
+      "assign_to": "designer",
+      "description": "admin/requests/[id]/page.tsx MUI化のレビュー",
+      "dependencies": [
+        "code-top-4-3"
+      ],
+      "status": "completed",
+      "created_at": "2026-04-24T08:28:03.747336136Z",
+      "updated_at": "2026-04-24T08:35:43.9655991Z"
+    },
+    {
+      "id": "review-bot-4-2",
+      "type": "review",
+      "assign_to": "designer",
+      "description": "admin/categories MUI化のレビュー",
+      "dependencies": [
+        "code-bot-4-2"
+      ],
+      "status": "assigned",
+      "created_at": "2026-04-24T08:28:03.754861747Z",
+      "updated_at": "2026-04-24T08:30:50.851532332Z"
+    },
+    {
+      "id": "fix-top-4-3",
+      "type": "code",
+      "assign_to": "worker-top",
+      "description": "admin/requests/[id]/page.tsx のレビュー指摘修正",
+      "dependencies": null,
+      "status": "completed",
+      "created_at": "2026-04-24T08:35:55.003456138Z",
+      "updated_at": "2026-04-24T08:37:38.983792147Z"
+    },
+    {
+      "id": "review-fix-4-3",
+      "type": "review",
+      "assign_to": "designer",
+      "description": "admin/requests/[id]/page.tsx 修正後レビュー",
+      "dependencies": [
+        "fix-top-4-3"
+      ],
+      "status": "assigned",
+      "created_at": "2026-04-24T08:35:55.022993165Z",
+      "updated_at": "2026-04-24T08:37:51.169170695Z"
+    }
+  ]
+}

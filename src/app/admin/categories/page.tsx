@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { prisma } from "@/lib/prisma";
 import { CategoriesClient, type CategoryListItem } from "./CategoriesClient";
-import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "カテゴリ管理 | 棚からリクエスト",
@@ -22,15 +24,17 @@ export default async function AdminCategoriesPage() {
   });
 
   return (
-    <main className={styles.page}>
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <p>管理者設定</p>
-          <h1>カテゴリ管理</h1>
-        </header>
+    <Box sx={{ maxWidth: 1120, mx: "auto" }}>
+      <Stack component="header" spacing={0.5} sx={{ mb: 3 }}>
+        <Typography color="text.secondary" sx={{ fontWeight: 600 }} variant="body2">
+          管理者設定
+        </Typography>
+        <Typography component="h1" sx={{ fontWeight: 700 }} variant="h4">
+          カテゴリ管理
+        </Typography>
+      </Stack>
 
-        <CategoriesClient categories={categories} />
-      </div>
-    </main>
+      <CategoriesClient categories={categories} />
+    </Box>
   );
 }

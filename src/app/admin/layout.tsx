@@ -1,9 +1,14 @@
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { SignOutButton } from "./sign-out-button";
-import styles from "./shell.module.css";
 
 export default async function AdminLayout({
   children,
@@ -21,31 +26,110 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.brand}>
-          <div className={styles.brandIcon}>▣</div>
-          <div>
-            <p className={styles.brandTitle}>棚からリクエスト</p>
-            <p className={styles.brandSubtitle}>管理者向けダッシュボード</p>
-          </div>
-        </div>
-        <div className={styles.actions}>
-          <nav className={styles.nav}>
-            <Link className={styles.navLink} href="/admin">
-              管理者
-            </Link>
-            <Link className={styles.navLink} href="/admin/categories">
-              カテゴリ管理
-            </Link>
-          </nav>
-          <div className={styles.userBlock}>
-            <span className={styles.userName}>{session.user.name}</span>
-            <SignOutButton className={styles.signOutButton} />
-          </div>
-        </div>
-      </header>
-      <main className={styles.main}>{children}</main>
-    </div>
+    <Box sx={{ minHeight: "100vh", pb: 5 }}>
+      <AppBar
+        color="transparent"
+        elevation={0}
+        position="sticky"
+        sx={{
+          backdropFilter: "blur(18px)",
+          backgroundColor: "rgba(255, 255, 255, 0.88)",
+          borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+        }}
+      >
+        <Container maxWidth="xl">
+          <Toolbar
+            disableGutters
+            sx={{
+              alignItems: { xs: "stretch", md: "center" },
+              flexDirection: { xs: "column", md: "row" },
+              gap: 2,
+              py: 2,
+            }}
+          >
+            <Box
+              sx={{
+                alignItems: "center",
+                display: "flex",
+                flexShrink: 0,
+                gap: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  alignItems: "center",
+                  background: "linear-gradient(135deg, #4f8cff, #2563eb)",
+                  borderRadius: 3.5,
+                  color: "common.white",
+                  display: "inline-flex",
+                  fontSize: 22,
+                  fontWeight: 800,
+                  height: 48,
+                  justifyContent: "center",
+                  width: 48,
+                }}
+              >
+                ▣
+              </Box>
+              <Box>
+                <Typography sx={{ fontWeight: 800 }} variant="h6">
+                  棚からリクエスト
+                </Typography>
+                <Typography color="text.secondary" variant="body2">
+                  管理者向けダッシュボード
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                alignItems: { xs: "stretch", md: "center" },
+                display: "flex",
+                flex: 1,
+                flexDirection: { xs: "column", lg: "row" },
+                gap: 2,
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <Box
+                component="nav"
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: 1.5,
+                }}
+              >
+                <Button component={Link} href="/admin" variant="outlined">
+                  管理者
+                </Button>
+                <Button component={Link} href="/admin/categories" variant="outlined">
+                  カテゴリ管理
+                </Button>
+              </Box>
+
+              <Box
+                sx={{
+                  alignItems: { xs: "stretch", sm: "center" },
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: 1.5,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Typography color="text.secondary" variant="body2">
+                  {session.user.name}
+                </Typography>
+                <SignOutButton />
+              </Box>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      <Container component="main" maxWidth="xl" sx={{ pt: 4 }}>
+        {children}
+      </Container>
+    </Box>
   );
 }

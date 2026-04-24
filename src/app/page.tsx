@@ -11,7 +11,7 @@ type RequestRow = {
   title: string;
   requesterName: string;
   status: RequestStatus;
-  categoryType: CategoryType;
+  categoryType: CategoryType | null;
   createdAt: Date;
 };
 
@@ -341,7 +341,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
                   rows.map((row) => (
                     <tr key={row.id}>
                       <td className={styles.titleCell}>{row.title}</td>
-                      <td>{CATEGORY_LABELS[row.categoryType]}</td>
+                      <td>{row.categoryType ? CATEGORY_LABELS[row.categoryType] : "未設定"}</td>
                       <td>
                         <span className={`${styles.statusChip} ${getStatusClassName(row.status)}`}>
                           {STATUS_LABELS[row.status]}

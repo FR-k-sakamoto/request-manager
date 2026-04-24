@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
-import styles from "./page.module.css";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 type LoginFormProps = {
   defaultError?: string;
@@ -15,9 +18,10 @@ export function LoginForm({ defaultError = "" }: LoginFormProps) {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <form
-      className={styles.form}
-      onSubmit={(event) => {
+    <Box
+      component="form"
+      sx={{ display: "grid", gap: 2.25 }}
+      onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const formData = new FormData(event.currentTarget);
@@ -44,24 +48,54 @@ export function LoginForm({ defaultError = "" }: LoginFormProps) {
         });
       }}
     >
-      <div className={styles.field}>
-        <label htmlFor="email">Email</label>
-        <input autoComplete="email" id="email" name="email" required type="email" />
-      </div>
-      <div className={styles.field}>
-        <label htmlFor="password">Password</label>
-        <input
-          autoComplete="current-password"
-          id="password"
-          name="password"
-          required
-          type="password"
-        />
-      </div>
-      {error ? <p className={styles.errorText}>{error}</p> : null}
-      <button className={styles.submitButton} disabled={isPending} type="submit">
+      <TextField
+        autoComplete="email"
+        id="email"
+        name="email"
+        label="Email"
+        required
+        type="email"
+        fullWidth
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "16px",
+            height: 54,
+          },
+        }}
+      />
+      <TextField
+        autoComplete="current-password"
+        id="password"
+        name="password"
+        label="Password"
+        required
+        type="password"
+        fullWidth
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            borderRadius: "16px",
+            height: 54,
+          },
+        }}
+      />
+      {error ? (
+        <Typography sx={{ color: "error.main", fontSize: 14 }}>{error}</Typography>
+      ) : null}
+      <Button
+        type="submit"
+        variant="contained"
+        disabled={isPending}
+        sx={{
+          height: 52,
+          borderRadius: "16px",
+          fontWeight: 700,
+          background: "linear-gradient(135deg, #2563eb, #3b82f6)",
+          textTransform: "none",
+          fontSize: "inherit",
+        }}
+      >
         {isPending ? "ログイン中..." : "ログイン"}
-      </button>
-    </form>
+      </Button>
+    </Box>
   );
 }
