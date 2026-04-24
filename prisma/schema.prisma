@@ -48,10 +48,11 @@ model User {
 }
 
 model Category {
-  id          String       @id @default(cuid())
+  id          String        @id @default(cuid())
   name        String
-  type        CategoryType @unique
+  type        CategoryType? @unique
   description String?
+  isActive    Boolean       @default(true)
 
   requests Request[]
 

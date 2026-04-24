@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "棚からリクエスト",
-  description: "社員が備品購入や改善要望を投稿できる依頼管理アプリ",
+  description: "社内向けの備品購入や改善要望を投稿できる依頼管理アプリ",
 };
 
 export default function RootLayout({
