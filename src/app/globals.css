@@ -28,6 +28,7 @@ body {
     radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 24%),
     linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%);
   font-family:
+    var(--font-geist-sans),
     "Hiragino Sans",
     "Noto Sans JP",
     "Yu Gothic UI",
