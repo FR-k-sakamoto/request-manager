@@ -11,3 +11,146 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  COMPLETED
+  REJECTED
+}
+
+enum CategoryType {
+  OFFICE_SUPPLY
+  IMPROVEMENT
+}
+
+model User {
+  id    String   @id @default(cuid())
+  name  String
+  email String   @unique
+  role  UserRole @default(USER)
+
+  requests        Request[] @relation("RequesterRequests")
+  handledRequests Request[] @relation("HandlerRequests")
+
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  requestStatusHistories RequestStatusHistory[]
+  requestReactions       RequestReaction[]
+  requestAttachments     RequestAttachment[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String
+  type        CategoryType @unique
+  description String?
+
+  requests Request[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Request {
+  id String @id @default(cuid())
+
+  title       String
+  description String
+  status      RequestStatus @default(PENDING)
+
+  requesterId String
+  requester   User   @relation("RequesterRequests", fields: [requesterId], references: [id], onDelete: Restrict)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  handledById String?
+  handledBy   User?   @relation("HandlerRequests", fields: [handledById], references: [id], onDelete: SetNull)
+
+  rejectedReason String?
+  completedAt    DateTime?
+  rejectedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  statusHistories RequestStatusHistory[]
+  reactions       RequestReaction[]
+  attachments     RequestAttachment[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([requesterId])
+  @@index([createdAt])
+  @@map("requests")
+}
+
+model RequestStatusHistory {
+  id String @id @default(cuid())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  fromStatus RequestStatus?
+  toStatus   RequestStatus
+
+  changedById String?
+  changedBy   User?   @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  comment String?
+
+  createdAt DateTime @default(now())
+
+  @@index([requestId])
+  @@index([changedById])
+  @@map("request_status_histories")
+}
+
+model RequestReaction {
+  id String @id @default(cuid())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type String @default("WANT")
+
+  createdAt DateTime @default(now())
+
+  @@unique([requestId, userId, type])
+  @@index([requestId])
+  @@index([userId])
+  @@map("request_reactions")
+}
+
+model RequestAttachment {
+  id String @id @default(cuid())
+
+  requestId String
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  fileName String
+  fileUrl  String
+  mimeType String?
+  fileSize Int?
+
+  uploadedById String?
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([requestId])
+  @@index([uploadedById])
+  @@map("request_attachments")
+}
