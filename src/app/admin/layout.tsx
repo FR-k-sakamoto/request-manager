@@ -34,7 +34,8 @@ export default async function AdminLayout({
         sx={{
           backdropFilter: "blur(18px)",
           backgroundColor: "rgba(255, 255, 255, 0.88)",
-          borderBottom: (theme) => `1px solid ${theme.palette.border}`,
+          borderBottom: "1px solid",
+          borderColor: "divider",
         }}
       >
         <Container maxWidth="xl">
