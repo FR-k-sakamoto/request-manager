@@ -9,7 +9,14 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+const nextAuthSecret = process.env.NEXTAUTH_SECRET;
+
+if (!nextAuthSecret) {
+  throw new Error("NEXTAUTH_SECRET is not set.");
+}
+
 export const authOptions: NextAuthOptions = {
+  secret: nextAuthSecret,
   pages: {
     signIn: "/login",
   },

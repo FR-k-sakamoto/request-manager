@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { LoginForm } from "./login-form";
-import { SignOutInline } from "./sign-out-inline";
 import styles from "./page.module.css";
 
 type LoginPageProps = {
@@ -14,7 +13,7 @@ type LoginPageProps = {
 function getLoginErrorMessage(error: string) {
   switch (error) {
     case "forbidden":
-      return "このアカウントには管理画面へのアクセス権限がありません。";
+      return "管理操作には管理者権限が必要です。";
     case "CredentialsSignin":
       return "メールアドレスまたはパスワードが正しくありません。";
     default:
@@ -28,8 +27,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const rawError = Array.isArray(params.error) ? params.error[0] : params.error ?? "";
   const error = getLoginErrorMessage(rawError);
 
-  if (session?.user.role === "ADMIN") {
-    redirect("/admin");
+  if (session?.user) {
+    redirect(session.user.role === "ADMIN" ? "/admin" : "/");
   }
 
   return (
@@ -39,7 +38,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p className={styles.kicker}>Inventory Request Manager</p>
         <h1>棚からリクエスト</h1>
         <p className={styles.description}>
-          依頼の状況確認、在庫カテゴリの管理、管理者向けステータス更新をひとつの画面で扱えます。
+          一般ユーザーは依頼の参照と投稿、管理者は依頼の承認・却下などの管理操作を行えます。
         </p>
         <div className={styles.credentials}>
           <p>開発用の初期ユーザー</p>
@@ -50,24 +49,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
       <section className={styles.panel}>
         <div className={styles.panelHeader}>
-          <h2>管理者ログイン</h2>
-          <p>参考画像と同系統のデザインで、管理画面へ入るためのログイン導線を用意しました。</p>
+          <h2>ログイン</h2>
+          <p>ログイン後は権限に応じて利用できる画面へ自動で遷移します。</p>
         </div>
 
-        {session?.user ? (
-          <div className={styles.noticeBox}>
-            <p className={styles.errorText}>現在のログインユーザーは管理者権限を持っていません。</p>
-            <SignOutInline />
-          </div>
-        ) : (
-          <>
-            <LoginForm defaultError={error} />
-            <div className={styles.helperText}>
-              <p>Auth.js の Credentials 認証を使用しています。</p>
-              <p>管理画面の操作権限は `User.role` が `ADMIN` のユーザーに限定されます。</p>
-            </div>
-          </>
-        )}
+        <LoginForm defaultError={error} />
+        <div className={styles.helperText}>
+          <p>Auth.js の Credentials 認証を使用しています。</p>
+          <p>管理操作は `User.role` が `ADMIN` のユーザーのみに制限されます。</p>
+        </div>
       </section>
     </div>
   );

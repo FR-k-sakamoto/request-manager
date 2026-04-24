@@ -26,8 +26,12 @@ function resolveRedirectPath(pathname: string) {
 export async function updateRequestStatus(formData: FormData) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user || session.user.role !== "ADMIN") {
-    redirect("/login?error=forbidden");
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  if (session.user.role !== "ADMIN") {
+    redirect("/");
   }
 
   const parsed = updateStatusSchema.safeParse({

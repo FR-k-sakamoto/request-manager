@@ -31,7 +31,7 @@ export function LoginForm({ defaultError = "" }: LoginFormProps) {
             email,
             password,
             redirect: false,
-            callbackUrl: "/admin",
+            callbackUrl: "/login",
           });
 
           if (!result || result.error) {
@@ -39,7 +39,7 @@ export function LoginForm({ defaultError = "" }: LoginFormProps) {
             return;
           }
 
-          router.push("/admin");
+          router.push("/login");
           router.refresh();
         });
       }}
