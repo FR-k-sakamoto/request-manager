@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/env node \"$(git rev-parse --show-toplevel)/.agents/hooks/block_destructive_commands.mjs\"",
+            "statusMessage": "実行コマンドの安全性を確認中..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/env node \"$(git rev-parse --show-toplevel)/.agents/hooks/post_edit_workflow.mjs\"",
+            "statusMessage": "コード変更後の静的解析とテスト方針を確認中..."
+          }
+        ]
+      }
+    ]
+  }
+}

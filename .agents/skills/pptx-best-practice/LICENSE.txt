@@ -1,0 +1,6 @@
+Copyright (c) Funrepeat.
+All rights reserved.
+
+This skill and any bundled resources are proprietary and confidential.
+Use, reproduction, disclosure, distribution, or modification is permitted
+only with prior written permission from the copyright holder.

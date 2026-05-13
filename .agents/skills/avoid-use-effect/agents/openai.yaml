@@ -1,0 +1,4 @@
+interface:
+  display_name: "Avoid useEffect"
+  short_description: "Prefer declarative React patterns over direct useEffect"
+  default_prompt: "Use $avoid-use-effect when reviewing or writing React/Next.js client code that might reach for useEffect."

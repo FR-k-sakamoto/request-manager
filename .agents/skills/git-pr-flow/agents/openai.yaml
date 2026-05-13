@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git PR Flow"
+  short_description: "Run format, branch, commit, and PR flow"
+  default_prompt: "Use $git-pr-flow to run verification, create a branch, make granular commits, draft a PR body from the repository template, and open a PR to the requested base branch."
