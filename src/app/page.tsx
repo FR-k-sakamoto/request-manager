@@ -1,5 +1,5 @@
 import Form from "next/form";
-import styles from "./page.module.css";
+import styles from "./design.module.css";
 import { CategoryType, Prisma, RequestStatus } from "@/generated/prisma/client";
 import { UserHeader } from "@/components/user-header";
 
@@ -241,18 +241,14 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
   const isFallback = requestResult.isFallback || summary.isFallback;
 
   return (
-    <div className={styles.page}>
+    <div className={styles.shell}>
       <UserHeader />
-      <main className={styles.main}>
+      <main className={styles.wideContainer}>
         <section className={styles.hero}>
           <div>
             <p className={styles.eyebrow}>Request Manager</p>
-            <h1>依頼一覧</h1>
+            <h1 className={styles.pageTitle}>依頼一覧</h1>
             <p className={styles.description}>投稿された依頼を一覧で確認し、カテゴリとステータスごとに状況を把握できます。</p>
-          </div>
-          <div className={styles.heroNote}>
-            <span className={styles.heroLabel}>対応ステータス</span>
-            <strong>未対応 / 完了 / 却下</strong>
           </div>
         </section>
 
@@ -263,28 +259,28 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
         ) : null}
 
         <section className={styles.summaryGrid}>
-          <article className={`${styles.summaryCard} ${styles.pendingCard}`}>
+          <article className={styles.summaryCard}>
             <span className={styles.summaryLabel}>未対応</span>
-            <strong>{summary.pending}件</strong>
+            <strong className={styles.summaryValue}>{summary.pending}件</strong>
           </article>
-          <article className={`${styles.summaryCard} ${styles.completedCard}`}>
+          <article className={styles.summaryCard}>
             <span className={styles.summaryLabel}>完了</span>
-            <strong>{summary.completed}件</strong>
+            <strong className={styles.summaryValue}>{summary.completed}件</strong>
           </article>
-          <article className={`${styles.summaryCard} ${styles.rejectedCard}`}>
+          <article className={styles.summaryCard}>
             <span className={styles.summaryLabel}>却下</span>
-            <strong>{summary.rejected}件</strong>
+            <strong className={styles.summaryValue}>{summary.rejected}件</strong>
           </article>
         </section>
 
-        <section className={styles.panel}>
-          <Form action="" className={styles.filters}>
-            <label className={styles.field}>
+        <section>
+          <Form action="" className={styles.searchPill}>
+            <label className={styles.searchField}>
               <span>検索</span>
               <input name="query" defaultValue={query} placeholder="依頼タイトル・依頼者で検索" />
             </label>
 
-            <label className={styles.field}>
+            <label className={styles.searchField}>
               <span>ステータス</span>
               <select name="status" defaultValue={status ?? "ALL"}>
                 {STATUS_OPTIONS.map((option) => (
@@ -295,7 +291,7 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
               </select>
             </label>
 
-            <label className={styles.field}>
+            <label className={styles.searchField}>
               <span>カテゴリ</span>
               <select name="category" defaultValue={category ?? "ALL"}>
                 {CATEGORY_OPTIONS.map((option) => (
@@ -306,17 +302,17 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
               </select>
             </label>
 
-            <button type="submit" className={styles.submitButton}>
+            <button type="submit" className={styles.searchButton}>
               絞り込む
             </button>
           </Form>
         </section>
 
-        <section className={styles.panel}>
+        <section className={styles.sectionCard}>
           <div className={styles.tableHeader}>
             <div>
-              <h2>投稿一覧</h2>
-              <p>{rows.length}件を表示しています。</p>
+              <h2 className={styles.sectionTitle}>投稿一覧</h2>
+              <p className={styles.mutedText}>{rows.length}件を表示しています。</p>
             </div>
           </div>
 

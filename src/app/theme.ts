@@ -31,29 +31,28 @@ export const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#2563eb",
-      dark: "#1d4ed8",
+      main: "#ff385c",
+      dark: "#e00b41",
     },
     secondary: {
-      main: "#0f766e",
+      main: "#222222",
     },
     background: {
-      default: "#f4f7fc",
+      default: "#ffffff",
       paper: "#ffffff",
-      gradient:
-        "radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%)",
+      gradient: "#ffffff",
     },
     text: {
-      primary: "#162033",
-      secondary: "#66728a",
+      primary: "#222222",
+      secondary: "#6a6a6a",
     },
-    border: "#d6deed",
-    muted: "#66728a",
-    surface: "rgba(255, 255, 255, 0.92)",
+    border: "#dddddd",
+    muted: "#6a6a6a",
+    surface: "#ffffff",
     status: {
-      pending: { main: "#d97706", bg: "rgba(245, 158, 11, 0.14)" },
-      completed: { main: "#15803d", bg: "rgba(34, 197, 94, 0.14)" },
-      rejected: { main: "#dc2626", bg: "rgba(248, 113, 113, 0.16)" },
+      pending: { main: "#c13515", bg: "#fff7ed" },
+      completed: { main: "#222222", bg: "#f2f2f2" },
+      rejected: { main: "#b32505", bg: "#ffe8ee" },
     },
   },
   shadows: [
@@ -88,7 +87,7 @@ export const theme = createTheme({
   },
   typography: {
     fontFamily:
-      '"Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif',
+      '"Airbnb Cereal VF", Circular, "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", -apple-system, system-ui, sans-serif',
   },
   components: {
     MuiCssBaseline: {
@@ -100,8 +99,7 @@ export const theme = createTheme({
           minHeight: "100%",
           display: "flex",
           flexDirection: "column",
-          background:
-            "radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 24%), linear-gradient(180deg, #f8fbff 0%, #eef4fb 100%)",
+          background: "#ffffff",
         },
         a: {
           color: "inherit",
